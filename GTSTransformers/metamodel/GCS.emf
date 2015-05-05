@@ -1,0 +1,24 @@
+@namespace(uri="http://www.lcc.uma.es/GCS/1.0", prefix="gcs")
+package gcs;
+
+class MetamodelGD extends NamedElement {
+  val PackageGD[*]#metamodelGD packagesGD;
+}
+
+class ClassGD extends NamedElement {
+  attr String figurePath;
+  ref PackageGD[1]#classesGD packageGD;
+  ref ecore.EClass[1] ~class;
+}
+
+class PackageGD extends NamedElement {
+  val ClassGD[*]#packageGD classesGD;
+  ref MetamodelGD[1]#packagesGD metamodelGD;
+  ref ecore.EPackage[1] ~package;
+  ref PackageGD#subPackagesGD superPackageGD;
+  ref PackageGD[*]#superPackageGD subPackagesGD;
+}
+
+class NamedElement {
+  attr String[1] name;
+}

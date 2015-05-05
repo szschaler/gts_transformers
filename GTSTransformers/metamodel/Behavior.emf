@@ -1,0 +1,114 @@
+@namespace(uri="http://www.lcc.uma.es/Behavior/1.0", prefix="behavior")
+package behavior;
+
+import "platform:/resource/GTSTransformers/metamodel/GCS.ecore";
+
+class Behavior {
+  attr FormalizationKind[1] formalization;
+  ref gcs.MetamodelGD[*] metamodelGD;
+  attr boolean[1] denseTime;
+  val Helper[*]#behavior helpers;
+  val Rule[*]#behavior rules;
+  attr boolean[1] nonInjectiveness;
+}
+
+class Rule {
+  id attr String[1] name;
+  unsettable attr float lowerBound;
+  unsettable attr float upperBound = "-1.0";
+  attr boolean[1] soft;
+  val Variable[*]#rule vbles;
+  ref Pattern[1] lhs;
+  ref Pattern[1] rhs;
+  ref Pattern[*] nacs;
+  ref Behavior#rules behavior;
+  val Pattern[2..*]#rule patterns;
+  attr String maxDuration = "";
+}
+
+class Pattern {
+  val PatternEl[*]#pattern els;
+  attr String name;
+  ref Rule#patterns rule;
+}
+
+enum FormalizationKind {
+  spo = 0;
+  dpo = 1;
+}
+
+class Object extends PatternEl {
+  attr String[1] ~id;
+  val Slot[*]#object sfs;
+  ref gcs.ClassGD classGD;
+  ref Link[*]#src outLinks;
+  ref Link[*]#target inLinks;
+}
+
+class Link extends PatternEl {
+  ref Object[1]#outLinks src;
+  ref Object[1]#inLinks target;
+  ref ecore.EReference[1] ~ref;
+  attr String pos;
+}
+
+class ActionExec extends PatternEl {
+  ref AtomicRule action;
+  val ObjectRole[*]#actionExec participants;
+  attr String[1] ~id;
+  unsettable attr String startingTime;
+  unsettable attr String endingTime;
+  attr ActionStatus[1] status;
+  attr String executionTime;
+}
+
+class ObjectRole {
+  ref Object[1] actualObject;
+  ref Object role;
+  ref ActionExec[1]#participants actionExec;
+}
+
+class Slot {
+  ref ecore.EAttribute[1] sf;
+  ref Object[1]#sfs object;
+  attr String[1] oclValue;
+}
+
+class Condition extends PatternEl {
+  attr String[1] oclValue;
+}
+
+abstract class PatternEl {
+  ref Pattern[1]#els pattern;
+}
+
+class Clock extends Object {
+}
+
+class AtomicRule extends Rule {
+  attr String minDuration = "0";
+  unsettable attr float periodicity;
+}
+
+class OngoingRule extends Rule {
+}
+
+class Variable {
+  attr String[1] name;
+  attr String[1] type;
+  attr String[1] value;
+  ref Rule#vbles rule;
+}
+
+class Helper {
+  attr String[1] oclExpression;
+  ref Behavior#helpers behavior;
+}
+
+enum ActionStatus {
+  unfinished = 0;
+  realized = 1;
+  interrupted = 2;
+  aborted = 3;
+}
+
